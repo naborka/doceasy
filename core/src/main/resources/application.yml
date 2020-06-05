@@ -1,0 +1,42 @@
+doceasy:
+  server:
+    host: localhost:8080
+  identity:
+    confirmation:
+      token:
+        lifetime: 1h
+  account:
+    password:
+      minimum-length: 6
+
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: full
+
+spring:
+  data:
+    mongodb:
+      authentication-database: admin
+      username: doceasy
+      password: qweqwe123qwe
+      database: doceasy
+      port: 27017
+      host: localhost
+
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:54321/doceasy
+    username: doceasy
+    password: qweqwe123qwe
+    driverClassName: org.postgresql.Driver
+
+debug: true
+logging.level.ru.d1g.doceasy.core.integration.ModuleClient: TRACE

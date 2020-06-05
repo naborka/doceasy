@@ -1,0 +1,21 @@
+version: '3'
+
+#volumes:
+#  mongo-volume:
+#    driver: local
+
+services:
+  mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27017-27019:27017-27019
+    volumes:
+      - ./.docker/mongodb/data/db/:/data/db/
+      #      - ./.docker/mongodb/mongod.conf:/etc/mongod.conf
+      #      - ./.docker/mongodb/initdb.d/:/docker-entrypoint-initdb.d/
+      #      - ./.docker/mongodb/data/log/:/var/log/mongodb/
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: doceasy
+      MONGO_INITDB_ROOT_PASSWORD: qweqwe123qwe
+      MONGO_INITDB_DATABASE: doceasy

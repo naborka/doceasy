@@ -1,0 +1,18 @@
+version: '3'
+
+volumes:
+  postgres-volume:
+    driver: local
+
+services:
+  doceasy-postgres:
+    image: postgres:12
+    restart: always
+    ports:
+      - 54321:5432
+    volumes:
+      - postgres-volume:/data/db
+    environment:
+      POSTGRES_DB: doceasy
+      POSTGRES_USER: doceasy
+      POSTGRES_PASSWORD: qweqwe123qwe
