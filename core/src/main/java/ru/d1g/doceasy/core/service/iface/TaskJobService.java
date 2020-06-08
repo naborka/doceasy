@@ -10,4 +10,7 @@ public interface TaskJobService {
     TaskJob create(Module module, Collection<String> imageIds);
     void run(TaskJob taskJob);
     TaskJob getById(UUID id);
+    Collection<TaskJob> findAll();
+    TaskJob save(TaskJob taskJob);
+    void delete(TaskJob taskJob);
 }

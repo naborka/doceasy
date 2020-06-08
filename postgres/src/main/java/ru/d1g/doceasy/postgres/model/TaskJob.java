@@ -8,6 +8,7 @@ import java.util.Set;
 public class TaskJob extends BaseEntity {
     @ManyToOne
     private Account account;
+    private String name;
     @OneToOne
     private Module module;
     @ElementCollection(fetch = FetchType.EAGER)
@@ -19,6 +20,14 @@ public class TaskJob extends BaseEntity {
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Module getModule() {

@@ -6,7 +6,10 @@ import ru.d1g.doceasy.core.service.iface.ModuleService;
 import ru.d1g.doceasy.postgres.model.Module;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class ModuleServiceImpl implements ModuleService {
@@ -19,5 +22,20 @@ public class ModuleServiceImpl implements ModuleService {
     @Override
     public Module getById(UUID id) {
         return moduleRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Override
+    public Collection<Module> findAll() {
+        return StreamSupport.stream(moduleRepository.findAll().spliterator(), false).collect(Collectors.toList());
+    }
+
+    @Override
+    public Module save(Module module) {
+        return moduleRepository.save(module);
+    }
+
+    @Override
+    public void delete(Module module) {
+        moduleRepository.delete(module);
     }
 }

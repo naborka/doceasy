@@ -14,6 +14,8 @@ import ru.d1g.doceasy.postgres.model.TaskJob;
 import javax.persistence.EntityNotFoundException;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class TaskJobServiceImpl implements TaskJobService {
@@ -49,5 +51,20 @@ public class TaskJobServiceImpl implements TaskJobService {
     @Override
     public TaskJob getById(UUID id) {
         return taskJobRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Override
+    public Collection<TaskJob> findAll() {
+        return StreamSupport.stream(taskJobRepository.findAll().spliterator(), false).collect(Collectors.toList());
+    }
+
+    @Override
+    public TaskJob save(TaskJob taskJob) {
+        return taskJobRepository.save(taskJob);
+    }
+
+    @Override
+    public void delete(TaskJob taskJob) {
+        taskJobRepository.delete(taskJob);
     }
 }

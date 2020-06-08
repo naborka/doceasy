@@ -1,6 +1,7 @@
 doceasy:
   server:
     host: localhost:8080
+    address: http://${doceasy.server.host}
   identity:
     confirmation:
       token:
@@ -8,6 +9,11 @@ doceasy:
   account:
     password:
       minimum-length: 6
+
+server:
+  port: 8080
+vaadin:
+  urlMapping: /start/*
 
 feign:
   client:
@@ -24,6 +30,16 @@ spring:
       database: doceasy
       port: 27017
       host: localhost
+
+  mail:
+    host: smtp.yandex.com
+    port: 465
+    username: no-reply@nomia.net
+    password: RaBfNL2BsahH5yu
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.starttls.enable: false
+    properties.mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+    test-connection: true
 
   jpa:
     database: POSTGRESQL
