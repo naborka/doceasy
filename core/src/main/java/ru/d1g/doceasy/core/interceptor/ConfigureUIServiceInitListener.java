@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import ru.d1g.doceasy.core.ui.LoginView;
+import ru.d1g.doceasy.core.ui.RegistrationView;
 
 @Component
 public class ConfigureUIServiceInitListener implements VaadinServiceInitListener {
@@ -27,8 +28,7 @@ public class ConfigureUIServiceInitListener implements VaadinServiceInitListener
      * @param event before navigation event with event details
      */
     private void beforeEnter(BeforeEnterEvent event) {
-        if (!LoginView.class.equals(event.getNavigationTarget())
-                && !isUserLoggedIn()) {
+        if (!isUserLoggedIn() && !(LoginView.class.equals(event.getNavigationTarget()) || RegistrationView.class.equals(event.getNavigationTarget()))) {
             event.rerouteTo(LoginView.class);
         }
     }

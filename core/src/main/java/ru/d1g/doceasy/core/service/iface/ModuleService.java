@@ -9,5 +9,4 @@ public interface ModuleService {
     Module getById(UUID id);
     Collection<Module> findAll();
     Module save(Module module);
-    void delete(Module module);
 }

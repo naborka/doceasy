@@ -20,7 +20,7 @@ import com.vaadin.flow.server.PageConfigurator;
 import java.util.HashMap;
 import java.util.Map;
 
-@Route("a")
+@Route
 public class MainView extends AppLayout implements BeforeEnterObserver, AfterNavigationObserver, PageConfigurator {
 
     private Tabs tabs = new Tabs();
@@ -38,12 +38,13 @@ public class MainView extends AppLayout implements BeforeEnterObserver, AfterNav
         tabs.addSelectedChangeListener(event -> tabsSelectionChanged(event));
         addToNavbar(tabs);
 
-        addTab(ModulesView.class);
-        addTab(JobsView.class);
+        addTab(ModulesView.class, "Модули");
+        addTab(JobsView.class, "Задания");
+        addTab(ResultsView.class, "Результаты");
     }
 
-    private void addTab(Class<? extends HasComponents> clazz) {
-        Tab tab = new Tab(DemoUtils.getViewName(clazz));
+    private void addTab(Class<? extends HasComponents> clazz, String name) {
+        Tab tab = new Tab(name);
         tabs.add(tab);
         tabToView.put(tab, clazz);
         viewToTab.put(clazz, tab);

@@ -20,7 +20,9 @@ import ru.d1g.doceasy.mongo.model.Result;
 import ru.d1g.doceasy.postgres.model.Module;
 import ru.d1g.doceasy.postgres.model.TaskJob;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +50,14 @@ public class TaskJobStartedHandler implements ApplicationListener<TaskJobStarted
         TaskJob taskJob = taskJobStartedEvent.getTaskJob();
         Module module = taskJob.getModule();
         taskJob.getImageIds().forEach(imageId -> {
-            Image image = imageService.getById(imageId);
+            String imageUrl;
+            try {
+                URL url = new URL(imageId);
+                imageUrl = url.toString();
+            } catch (MalformedURLException e) {
+                Image image = imageService.getById(imageId);
+                imageUrl = image.getUrl();
+            }
             ParameterizedTypeReference<List<Map<String, Object>>> responseType =
                     new ParameterizedTypeReference<>() {
                     };
@@ -57,8 +66,8 @@ public class TaskJobStartedHandler implements ApplicationListener<TaskJobStarted
                     new TypeReference<>() {
                     };
             List<Map<String, Object>> resultData;
-            if (StringUtils.isNotBlank(image.getUrl())) {
-                resultData = moduleClient.exchange(module.getUrl() + "{url}", HttpMethod.GET, null, responseType, image.getUrl()).getBody();
+            if (StringUtils.isNotBlank(imageUrl)) {
+                resultData = moduleClient.exchange(module.getUrl() + "{url}", HttpMethod.GET, null, responseType, imageUrl).getBody();
                 log.debug("resut {}", resultData);
             } else {
                 resultData = moduleClient.exchange(module.getUrl() + "{url}", HttpMethod.GET, null, responseType, URI.create(serverAddress + Constants.API_URL + "/" + imageId).toString()).getBody();

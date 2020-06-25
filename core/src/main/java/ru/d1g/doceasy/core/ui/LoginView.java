@@ -1,6 +1,7 @@
 package ru.d1g.doceasy.core.ui;
 
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -28,7 +29,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         form.setTitle("");
         form.setUsername("Логин");
         form.setPassword("Пароль");
-        form.setForgotPassword("Восстановить пароль");
+        form.setForgotPassword("Регистрация");
         form.setSubmit("Войти");
 
         LoginI18n i18n = new LoginI18n();
@@ -37,6 +38,12 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         login.setAction("login");
         login.setOpened(true);
         login.setI18n(i18n);
+
+        login.addForgotPasswordListener(event -> getUI().ifPresent(ui -> {
+            ui.navigate(RegistrationView.class);
+            ui.getPage().reload();
+        }));
+
         getElement().appendChild(login.getElement());
     }
 

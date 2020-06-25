@@ -1,11 +1,15 @@
 package ru.d1g.doceasy.postgres.model;
 
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class TaskJob extends BaseEntity {
+public class TaskJob extends BaseEntity implements HasOwner {
     @ManyToOne
     private Account account;
     private String name;

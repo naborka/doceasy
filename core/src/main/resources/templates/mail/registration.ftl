@@ -33,7 +33,7 @@
     <tbody>
     <tr style="display: block; height: 165px; width: 600px;">
         <td colspan="3" style="display: block; height: 165px; width: 412px; float: left; background: #ffffff">
-            <p style="width: 412px; text-align: center; font-size: 20px; font-weight: 500">${name}, здравствуйте!</p>
+<#--            <p style="width: 412px; text-align: center; font-size: 20px; font-weight: 500">${name}, здравствуйте!</p>-->
             <p style="font-weight: 300; font-size: 16px; width: 412px; display: block; text-align: center">Подтвердите
                 этот email, чтобы начать работу с DocEASY.</p>
         </td>

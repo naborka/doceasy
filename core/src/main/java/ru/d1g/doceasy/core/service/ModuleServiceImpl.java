@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.d1g.doceasy.core.data.repository.jpa.ModuleRepository;
 import ru.d1g.doceasy.core.service.iface.ModuleService;
 import ru.d1g.doceasy.postgres.model.Module;
+import ru.d1g.doceasy.postgres.model.QModule;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Collection;
@@ -26,16 +27,11 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Override
     public Collection<Module> findAll() {
-        return StreamSupport.stream(moduleRepository.findAll().spliterator(), false).collect(Collectors.toList());
+        return StreamSupport.stream(moduleRepository.findAll(QModule.module.enabled.isTrue()).spliterator(), false).collect(Collectors.toList());
     }
 
     @Override
     public Module save(Module module) {
         return moduleRepository.save(module);
-    }
-
-    @Override
-    public void delete(Module module) {
-        moduleRepository.delete(module);
     }
 }

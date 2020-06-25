@@ -1,53 +1,76 @@
 package ru.d1g.doceasy.core.ui;
 
 import com.google.common.collect.Sets;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.renderer.TextRenderer;
 import com.vaadin.flow.router.Route;
+import org.springframework.scheduling.config.Task;
 import org.vaadin.crudui.crud.CrudOperation;
-import org.vaadin.crudui.crud.impl.GridCrud;
+import org.vaadin.crudui.form.impl.field.provider.ComboBoxProvider;
+import org.vaadin.crudui.form.impl.form.factory.DefaultCrudFormFactory;
+import org.vaadin.crudui.layout.impl.VerticalCrudLayout;
 import ru.d1g.doceasy.core.service.iface.ModuleService;
 import ru.d1g.doceasy.core.service.iface.TaskJobService;
+import ru.d1g.doceasy.core.ui.crud.ConvertedDefaultCrudFormFactory;
+import ru.d1g.doceasy.core.ui.crud.GridCrudEnchanted;
+import ru.d1g.doceasy.postgres.model.Module;
 import ru.d1g.doceasy.postgres.model.TaskJob;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.Set;
 
 @Route(value = "jobs", layout = MainView.class)
 public class JobsView extends VerticalLayout {
 
     public JobsView(TaskJobService taskJobService, ModuleService moduleService) {
+        ConvertedDefaultCrudFormFactory<TaskJob> defaultCrudFormFactory = new ConvertedDefaultCrudFormFactory<>(TaskJob.class, new FormLayout.ResponsiveStep("100em", 1));
+        defaultCrudFormFactory.setCancelButtonCaption("Отмена");
+        defaultCrudFormFactory.setButtonCaption(CrudOperation.READ, "Отмена");
+        defaultCrudFormFactory.setButtonCaption(CrudOperation.ADD, "Добавить");
+        defaultCrudFormFactory.setButtonCaption(CrudOperation.UPDATE, "Сохранить");
+        defaultCrudFormFactory.setButtonCaption(CrudOperation.DELETE, "Удалить");
+
         // crud instance
-        GridCrud<TaskJob> crud = new GridCrud<>(TaskJob.class);
+        GridCrudEnchanted<TaskJob> crud = new GridCrudEnchanted<>(TaskJob.class, new VerticalCrudLayout(), defaultCrudFormFactory);
 
         // grid configuration
-        crud.getGrid().setColumns("id");
-        crud.getGrid().addColumn(taskJob -> LocalDateTime.ofInstant(taskJob.getCreatedDate(), ZoneId.systemDefault()).format(DateTimeFormatter.BASIC_ISO_DATE));
-        crud.getGrid().addColumn("name");
-        crud.getGrid().addColumn(taskJob -> taskJob.getModule().getName()).setHeader("Модуль");
-        crud.getGrid().addColumn(taskJob -> taskJob.getImageIds().size()).setHeader("Кол-во изображений");
+        crud.getGrid().removeAllColumns();
+        crud.getGrid().addColumn("id").setWidth("19%");
+        crud.getGrid().addColumn(taskJob -> {
+            if (taskJob.getCreatedDate() != null) {
+                return LocalDateTime.ofInstant(taskJob.getCreatedDate(), ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+            } else {
+                return "";
+            }
+        }).setHeader("Создано").setWidth("7%");
+        crud.getGrid().addColumn("name").setWidth("25%").setHeader("Задание");
+        crud.getGrid().addColumn(taskJob -> {
+            if (taskJob.getModule() != null && taskJob.getModule().getName() != null) {
+                return taskJob.getModule().getName();
+            } else {
+                return "";
+            }
+        }).setHeader("Модуль").setWidth("30%");
+
+        crud.getGrid().addColumn(taskJob -> taskJob.getImageIds().size()).setHeader("Кол-во изображений").setWidth("9%");
         crud.getGrid().setColumnReorderingAllowed(true);
+        crud.getGrid().addItemDoubleClickListener(event -> crud.updateObject(event.getItem()));
 
         // form configuration
+
         crud.getCrudFormFactory().setUseBeanValidation(true);
         crud.getCrudFormFactory().setVisibleProperties("name", "module", "imageIds");
-        crud.getCrudFormFactory().setVisibleProperties(CrudOperation.ADD, "name", "module", "imageIds");
-//        crud.getCrudFormFactory().setConverter("imageIds", new Converter<Set<String>, String>() {
-//            @Override
-//            public Result<String> convertToModel(Set<String> value, ValueContext context) {
-//                return Result.ok(String.join("\n", value));
-//            }
-//
-//            @Override
-//            public Set<String> convertToPresentation(String value, ValueContext context) {
-//                return Sets.newHashSet(value.split(System.getProperty("line.separator")));
-//            }
-//        });
+        crud.getCrudFormFactory().setFieldCaptions("Название", "Модуль", "URLs");
+
+        crud.getCrudFormFactory().setFieldProvider("module", new ComboBoxProvider<>("Модуль", moduleService.findAll(), new TextRenderer<>(Module::getName), Module::getName));
         crud.getCrudFormFactory().setFieldProvider("imageIds", () -> {
             TextArea textArea = new TextArea();
             return textArea;
@@ -55,6 +78,9 @@ public class JobsView extends VerticalLayout {
         crud.getCrudFormFactory().setConverter("imageIds", new Converter<String, Set<String>>() {
             @Override
             public Result<Set<String>> convertToModel(String value, ValueContext valueContext) {
+                if (value == null) {
+                    return Result.ok(new HashSet<>());
+                }
                 return Result.ok(Sets.newHashSet(value.split(System.getProperty("line.separator"))));
             }
 
@@ -71,7 +97,11 @@ public class JobsView extends VerticalLayout {
         // logic configuration
         crud.setOperations(
                 taskJobService::findAll,
-                taskJobService::save,
+                domainObject -> {
+                    TaskJob taskJob = taskJobService.save(domainObject);
+                    taskJobService.run(taskJob);
+                    return taskJob;
+                },
                 taskJobService::save,
                 taskJobService::delete
         );

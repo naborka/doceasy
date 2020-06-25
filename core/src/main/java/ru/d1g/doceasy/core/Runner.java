@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.d1g.doceasy.core.data.repository.jpa.ModuleRepository;
 import ru.d1g.doceasy.postgres.model.Module;
 
-@Component
+//@Component
 public class Runner implements CommandLineRunner {
     private final ModuleRepository moduleRepository;
 

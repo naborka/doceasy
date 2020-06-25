@@ -41,6 +41,7 @@ public class RegistrationView extends VerticalLayout {
 
     /**
      * We use Spring to inject the backend into our view
+     *
      * @param accountService
      * @param registrationService
      */
@@ -73,7 +74,7 @@ public class RegistrationView extends VerticalLayout {
         // Create a FormLayout with all our components. The FormLayout doesn't have any
         // logic (validation, etc.), but it allows us to configure Responsiveness from
         // Java code and its defaults looks nicer than just using a VerticalLayout.
-        FormLayout formLayout = new FormLayout(title, verticalLayout , errorMessage);
+        FormLayout formLayout = new FormLayout(title, verticalLayout, errorMessage);
 
         // Restrict maximum width and center on page
         formLayout.setMaxWidth("500px");
@@ -210,13 +211,14 @@ public class RegistrationView extends VerticalLayout {
      * if this handle is already in use.
      */
     private ValidationResult validateHandle(String handle, ValueContext ctx) {
-
-        boolean exists = accountService.isIdentityAlreadyExists(handle);
-        if (!exists) {
-            return ValidationResult.ok();
+        boolean identityExists = accountService.isIdentityAlreadyExists(handle);
+        if (identityExists) {
+            boolean confirmed = accountService.findIdentity(handle).isConfirmed();
+            if (confirmed) {
+                return ValidationResult.error("Такой пользоваель уже существует");
+            }
         }
-
-        return ValidationResult.error("Такой пользоваель уже существует");
+        return ValidationResult.ok();
     }
 
     /**

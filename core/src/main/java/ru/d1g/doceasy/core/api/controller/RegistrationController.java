@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.d1g.doceasy.core.service.iface.AccountService;
 import ru.d1g.doceasy.core.service.iface.RegistrationService;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 @RestController
@@ -28,11 +29,14 @@ public class RegistrationController {
     }
 
     @GetMapping("/confirm")
-    public ResponseEntity<?> confirm(@RequestParam UUID registration, @RequestParam String token) {
+    public ResponseEntity<?> confirm(@RequestParam UUID registration, @RequestParam String token, HttpServletResponse httpServletResponse) {
         Authentication confirmedRegistrationAuthentication = registrationService.confirm(registrationService.getRequestById(registration), token);
         if (confirmedRegistrationAuthentication != null) {
             SecurityContextHolder.getContext().setAuthentication(confirmedRegistrationAuthentication);
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                .status(302)
+                .header("Location", "http://doceasy.local.test:8080/start/")
+                .build();
     }
 }

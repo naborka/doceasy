@@ -8,4 +8,5 @@ public interface ResultService {
     Result getById(String id);
     List<Result> findAll();
     Result save(Result result);
+    void remove(Result result);
 }

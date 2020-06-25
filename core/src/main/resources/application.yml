@@ -1,6 +1,6 @@
 doceasy:
   server:
-    host: localhost:8080
+    host: doceasy.local.test:8080
     address: http://${doceasy.server.host}
   identity:
     confirmation:

@@ -25,12 +25,13 @@ import java.util.stream.Stream;
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String LOGIN_PROCESSING_URL = "/login";
-    private static final String LOGIN_FAILURE_URL = "/login?error";
-    private static final String LOGIN_URL = "/login";
-    private static final String LOGOUT_SUCCESS_URL = "/login";
+    private static final String LOGIN_PROCESSING_URL = "/start/login";
+    private static final String LOGIN_SUCCESS_URL = "/start/";
+    private static final String LOGIN_FAILURE_URL = "/start/login?error";
+    private static final String LOGIN_URL = "/start/login";
+    private static final String LOGOUT_SUCCESS_URL = "/start/login";
 
-    private static final String rememberMeKey = "jOq8C71D(1]]Ck.";
+    private static final String rememberMeKey = "i9So1kSk..c]@k";
 
     private final UserParticularityService userParticularityService;
 
@@ -83,6 +84,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/apple-touch-icon-76x76-precomposed.png",
                         "/apple-touch-icon-120x120-precomposed.png",
                         "/apple-touch-icon-152x152-precomposed.png",
+                        "/start/VAADIN/**",
                         "/VAADIN/**",
                         "/favicon.ico",
                         "/robots.txt",
@@ -108,21 +110,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .requestMatchers(WebSecurityConfig::isFrameworkInternalRequest).permitAll()
+                .antMatchers(LOGIN_URL, "/start/registration", "/registration", "/registration/**").permitAll()
                 .antMatchers(
                         Constants.API_URL + "**",
                         "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/actuator/**",
-                        "/support/**",
-                        "/login",
-                        "/registration",
-                        "/registration/**"
+                        "/support/**"
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .loginPage(LOGIN_URL)
+                .loginProcessingUrl(LOGIN_PROCESSING_URL)
+                .successForwardUrl(LOGIN_SUCCESS_URL)
                 .failureForwardUrl(LOGIN_FAILURE_URL)
                 .and()
-                .logout().logoutSuccessUrl("/login")
+                .logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL)
                 .and().rememberMe().rememberMeServices(rememberMeServices());
     }
 

@@ -9,6 +9,7 @@ import ru.d1g.doceasy.core.event.TaskJobStartedEvent;
 import ru.d1g.doceasy.core.service.iface.ImageService;
 import ru.d1g.doceasy.core.service.iface.TaskJobService;
 import ru.d1g.doceasy.postgres.model.Module;
+import ru.d1g.doceasy.postgres.model.QTaskJob;
 import ru.d1g.doceasy.postgres.model.TaskJob;
 
 import javax.persistence.EntityNotFoundException;
@@ -51,6 +52,11 @@ public class TaskJobServiceImpl implements TaskJobService {
     @Override
     public TaskJob getById(UUID id) {
         return taskJobRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Override
+    public Collection<TaskJob> getByImageIds(Collection<String> imageIds) {
+        return StreamSupport.stream(taskJobRepository.findAll(QTaskJob.taskJob.imageIds.any().in(imageIds)).spliterator(), false).collect(Collectors.toSet());
     }
 
     @Override
